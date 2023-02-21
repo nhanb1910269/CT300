@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Poké Search</title>
+</head>
+<style>
+	body{
+		display: grid;
+		justify-content: center;
+		margin: auto;
+    }
+</style>
+<body>
+	<h2>Poké Search</h2>
+	<input type="text" id="poke-name-input" />
+	<button id="search-btn" style="margin: 20px;">Search</button>
+	<hr />
+	<div id="result-div"></div>
+
+	<script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+	<script>
+		$(function () {
+			const inputPokeName = $('#poke-name-input');
+			const btnSearch = $('#search-btn');
+			const divResult = $('#result-div');
+
+			function searchAnimePoster(name) {
+				const pSummary = $('<b></b>');
+				const imgFrontPoke = $('<img>');
+				const imgBackPoke = $('<img>');
+				const pTypes = $('<p></p>');
+
+				pSummary.text('Đang tìm...');
+				imgFrontPoke.prop('src', '#');
+
+				divResult.append(pSummary);
+
+				$.getJSON(
+					`https://pokeapi.co/api/v2/pokemon/${name}`,
+					function (data) {
+						console.log(data);
+						imgFrontPoke.prop(
+							'src',
+							data.sprites.front_default
+						);
+						imgFrontPoke.appendTo(divResult);
+						imgBackPoke.prop(
+							'src',
+							data.sprites.back_default
+						);
+						imgBackPoke.appendTo(divResult);
+						pSummary.text(
+							'This is ' + data.name
+						);
+                        if(data.types.length > 1){
+                            pTypes.text(
+							'Type: ' + data.types[0].type.name + "  +  " + data.types[1].type.name
+						);
+						pTypes.appendTo(divResult);
+                        }else{
+                            pTypes.text(
+							'Type: ' + data.types[0].type.name
+						);
+						pTypes.appendTo(divResult);
+                        }
+
+					}
+				).fail(function (error) {
+					console.log(error);
+					pSummary.text('Không tìm thấy kết quả!');
+				});
+			}
+
+			btnSearch.on('click', function () {
+				const pokeName = inputPokeName.val().toLowerCase();
+				divResult.html('');
+				searchAnimePoster(pokeName);
+			});
+		});
+	</script>
+</body>
+
+</html>
